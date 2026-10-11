@@ -186,8 +186,8 @@ public class Fighting {
     }
 
     private void getReward(Player player) {
-        String[] rewards = {"\uD83C\uDFC6 桃子（1）", "\uD83D\uDCB0 煎蛋（2）", "\uD83D\uDCBB 花酿鸡（3）", "\uD83D\uDE0D 黑鲈鱼（4）", "\uD83D\uDE0E 烤乳猪（5）"};
-        int[] numList = {10, 20, 30, 40, 50};
+        String[] rewards = {"\uD83C\uDFC6 桃子", "\uD83D\uDCB0 煎蛋", "\uD83D\uDCBB 花酿鸡", "\uD83D\uDE0D 黑鲈鱼", "\uD83D\uDE0E 烤乳猪"};
+        int[] numList = {10, 20, 30, 40, 50}; // 对应的血量恢复值
         // 有30%的概率可以获得上面奖励，并恢复对应的血量
         Random random = new Random();
         int num = random.nextInt(10);
