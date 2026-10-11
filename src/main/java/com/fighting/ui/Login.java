@@ -15,7 +15,7 @@ public class Login {
             System.out.println("╔════════════════════════════════╗");
             System.out.println("    🎮 欢迎来到文字格斗游戏 🎮   ");
             System.out.println("╚════════════════════════════════╝");
-            System.out.println("请选择操作：1登录 2注册 3退出");
+            System.out.println("请选择操作：1登录 2注册 3退出 4忘记密码");
 
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
@@ -29,6 +29,7 @@ public class Login {
                     System.exit(0);
                     return;
                 }
+                case 4 -> updatePassword();
                 default -> System.out.println("输入有误，请重新选择！");
             }
         }
@@ -80,21 +81,49 @@ public class Login {
     }
     // 注册
     public void register(){
-        System.out.println("选择了注册操作");
-        System.out.println("请输入3-16位用户名：");
         Scanner sc = new Scanner(System.in);
-        String username = sc.nextLine();
-        // 校验用户名
-        if(Tool.checkUsername(username)) {
-            System.out.println("请输入3-8位密码：");
-            String password = sc.nextLine();
-            // 校验密码
-            if(Tool.checkPassword(password)) {
-                User user = new User(username, password);
-                Tool.users.add(user);
-                System.out.println("注册成功,可以去登录了~");
+        System.out.println("选择了注册操作");
+        System.out.println("请输入11位手机号");
+        String phone = sc.nextLine();
+        if (Tool.checkPhone(phone)){
+            System.out.println("请输入3-16位用户名：");
+            String username = sc.nextLine();
+            // 校验用户名
+            if(Tool.checkUsername(username)) {
+                System.out.println("请输入3-8位密码：");
+                String password = sc.nextLine();
+                // 校验密码
+                if(Tool.checkPassword(password)) {
+                    User user = new User(username, password, phone);
+                    Tool.users.add(user);
+                    System.out.println("注册成功,可以去登录了~");
+                }
             }
         }
+
     }
 
+    // 修改密码
+    public void updatePassword(){
+        System.out.println("选择了忘记密码操作");
+        System.out.println("请输入用户名：");
+        Scanner sc = new Scanner(System.in);
+        String username = sc.nextLine();
+        User user = Tool.findUser(username);
+        if (user != null){
+            System.out.println("请输入手机号码：");
+            String phone = sc.nextLine();
+            if (phone.equals(user.getPhone())){
+                System.out.println("请输入新密码：");
+                String newPassword = sc.nextLine();
+                user.setPassword(newPassword);
+                System.out.println("密码修改成功，请登录~");
+            }else {
+                System.out.println("手机号码错误，请重新输入！");
+            }
+        }else {
+            System.out.println("用户不存在，请先注册~");
+        }
+
+    }
 }

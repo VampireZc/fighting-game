@@ -1,5 +1,6 @@
 package com.fighting.game;
 
+import com.fighting.domain.Consumable;
 import com.fighting.domain.Enemy;
 import com.fighting.domain.Player;
 
@@ -9,6 +10,8 @@ import java.util.Scanner;
 
 public class Fighting {
     String username;
+    // 整个游戏共用一个 Scanner，避免每次 new 都会预读缓冲、丢弃未消费的输入导致错位
+    private final Scanner sc = new Scanner(System.in);
 
     public Fighting() {
     }
@@ -29,14 +32,13 @@ public class Fighting {
     // 创建角色
     public void createRole(){
         System.out.println("创建你的角色：");
-        Scanner sc = new Scanner(System.in);
         String name = sc.nextLine();
         System.out.println("创建成功，你的角色名是：" + name);
-        System.out.println("请分配你的属性点（共20点）");
+        System.out.println("请分配你的属性点（共25点）");
 
-        int points = 20;
-        String[] attributePoints = {"生命值","攻击力","防御力"};
-        int[] val = new int[3];
+        int points = 25;
+        String[] attributePoints = {"生命值","攻击力","防御力", "蓝条"};
+        int[] val = new int[4];
         for (int i = 0; i < attributePoints.length; i++) {
             String attribute = attributePoints[i];
             System.out.println("请输入" + attribute + "的值（剩余" + points + "点）：");
@@ -61,7 +63,8 @@ public class Fighting {
                 name,  // 角色名字
                 100 + val[0] * 10,  // 生命值
                 10 + val[1] * 2,  // 攻击力
-                0 + val[2] * 1  // 防御力
+                0 + val[2] * 1,  // 防御力
+                10 + val[3] * 10 // 蓝条
         );
 
         // 添加技能
@@ -124,7 +127,12 @@ public class Fighting {
                 if (!enemy.isAlive()){
                     System.out.println(enemy.getName() + "倒下了！");
                     wins++;
+                    // 每打败一个敌人恢复蓝条30%
+                    player.setMp((int)(player.getMpMax() * 1.3));
                     System.out.println("\uD83C\uDF89 恭喜你，赢得了第" + count + "轮战斗！");
+                    System.out.println("当前属性：" + player.showInfo());
+                    //获取奖励
+                    getReward(player);
                     break;
                 }
 
@@ -160,7 +168,6 @@ public class Fighting {
 
             if (player.isAlive()){
                 System.out.println("是否继续战斗？(y/n)");
-                Scanner sc = new Scanner(System.in);
                 String choice = sc.nextLine();
                 if ("y".equalsIgnoreCase(choice)){
                     count++;
@@ -175,6 +182,21 @@ public class Fighting {
                 }
             }
 
+        }
+    }
+
+    private void getReward(Player player) {
+        String[] rewards = {"\uD83C\uDFC6 桃子（1）", "\uD83D\uDCB0 煎蛋（2）", "\uD83D\uDCBB 花酿鸡（3）", "\uD83D\uDE0D 黑鲈鱼（4）", "\uD83D\uDE0E 烤乳猪（5）"};
+        int[] numList = {10, 20, 30, 40, 50};
+        // 有30%的概率可以获得上面奖励，并恢复对应的血量
+        Random random = new Random();
+        int num = random.nextInt(10);
+        if (num < 10){
+            int rewardIndex = random.nextInt(rewards.length);
+            String reward = rewards[rewardIndex];
+            int numValue = numList[rewardIndex];
+            player.packageList.add(new Consumable(reward, numValue));
+            System.out.println("\uD83C\uDF89 恭喜你获得了" + reward + "，可以恢复" + numValue + "点血量。");
         }
     }
 
@@ -239,23 +261,32 @@ public class Fighting {
 
     // 玩家回合
     public void playerTurn(Player player, Enemy enemy){
-        Scanner sc = new Scanner(System.in);
         System.out.println("===== 你的回合 =====");
         System.out.println("1. 普通攻击");
         System.out.println("2. 强力一击");
         System.out.println("3. 生命涉取");
-        int choice = sc.nextInt();
-        sc.nextLine(); // 消费掉回车换行
+        System.out.println("4. 使用道具");
+        int choice;
+        while (true) {
+            choice = sc.nextInt();
+            sc.nextLine(); // 消费掉回车换行
+            if (choice >= 1 && choice <= 4) {
+                break;
+            }
+            System.out.println("无效的选择，请输入 1-4：");
+        }
 
         switch (choice){
-            default:
-                System.out.println("无效的选择，默认普通攻击。");
             case 1:
+                player.setMp(player.getMp() - 10);
+                if (player.getMp() < 10) System.out.println("没有足够的蓝条，无法使用技能。");
                 int damage1 = calculateDamage(player.getAttack(), enemy.getDefense());
                 System.out.println(player.getName() + "对" + enemy.getName() + "使用了[普通攻击]" + "造成了" + damage1 + "点伤害。");
                 enemy.attack(damage1);//扣血
                 break;
             case 2:
+                player.setMp(player.getMp() - 10);
+                if (player.getMp() < 10) System.out.println("没有足够的蓝条，无法使用技能。");
                 if (player.getHp() > 10){
                     player.attack(10); // 扣血
                     int damage2 = calculateDamage((int)(player.getAttack() * 1.8), enemy.getDefense());
@@ -266,6 +297,8 @@ public class Fighting {
                 }
                 break;
             case 3:
+                player.setMp(player.getMp() - 10);
+                if (player.getMp() < 10) System.out.println("没有足够的蓝条，无法使用技能。");
                 if (player.getHp() > 10){
                     player.attack(10); // 扣血
                     Random r = new Random();
@@ -275,6 +308,27 @@ public class Fighting {
                 }else {
                     System.out.println("没有足够的HP，无法使用生命涉取。");
                 }
+                break;
+            case 4:
+                if (player.packageList.isEmpty()) {
+                    System.out.println("你的背包是空的，无法使用道具。");
+                    break;
+                }
+                System.out.println("你的背包中有：");
+                for (int i = 0; i < player.packageList.size(); i++) {
+                    Consumable item = player.packageList.get(i);
+                    System.out.println((i + 1) + ". " + item.getName() + "（恢复" + item.getNum() + "点血量）");
+                }
+                System.out.println("请选择要使用的道具(按序号即可)：");
+                int itemIndex = sc.nextInt();
+                sc.nextLine(); // 消费掉回车换行
+                if (itemIndex < 1 || itemIndex > player.packageList.size()) {
+                    System.out.println("无效的序号，道具使用失败。");
+                    break;
+                }
+                Consumable used = player.packageList.remove(itemIndex - 1);
+                player.recover(used.getNum());
+                System.out.println("\uD83C\uDF81 你使用了" + used.getName() + "，恢复了" + used.getNum() + "点血量。");
                 break;
         }
     }

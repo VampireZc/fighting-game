@@ -7,16 +7,18 @@ public class User {
     private String name;
     private String password;
     private Boolean state;
+    private String phone;
 
     public User() {
         this.id = Tool.generateId();
         this.state = true;
     }
 
-    public User(String name, String password) {
+    public User(String name, String password, String phone) {
         this.id = Tool.generateId();
         this.name = name;
         this.password = password;
+        this.phone = phone;
         this.state = true;
     }
 
@@ -49,5 +51,12 @@ public class User {
         this.state = state;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }
 

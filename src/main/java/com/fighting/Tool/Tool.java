@@ -102,8 +102,22 @@ public class Tool {
         return code.toString().equals(inputCode);
     }
 
-    // 校验用户状态
-    public static boolean checkState() {
+    // 校验手机号码
+    public static boolean checkPhone(String phone) {
+        // 只能由数字组成且由1开头
+        for (char c : phone.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                System.out.println("手机号码必须由数字组成，请重新输入");
+                return false;
+            }
+        }
+        if (!phone.startsWith("1") || phone.length() != 11) {
+            System.out.println("手机号码格式不正确，请重新输入");
+            return false;
+        }
+
         return true;
     }
+
+
 }
