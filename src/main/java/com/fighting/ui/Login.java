@@ -19,6 +19,7 @@ public class Login {
 
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
+            sc.nextLine(); // 消费掉回车换行，避免后续 nextLine 读到空串
 
             switch (choice){
                 case 1 -> login();

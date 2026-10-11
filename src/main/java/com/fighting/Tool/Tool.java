@@ -25,11 +25,19 @@ public class Tool {
         }
 
         // 必须由字母、数字组成，不能纯数字
+        boolean hasLetter = false;
         for (char c : username.toCharArray()) {
-            if (!Character.isLetterOrDigit(c) || Character.isDigit(c)) { // 判断是否由字母或数字组成，不能纯数字
-                System.out.println("用户名必须由字母或数字组成，不能纯数字，请重新输入");
+            if (!Character.isLetterOrDigit(c)) { // 只能由字母或数字组成
+                System.out.println("用户名必须由字母或数字组成，请重新输入");
                 return false;
             }
+            if (Character.isLetter(c)) {
+                hasLetter = true;
+            }
+        }
+        if (!hasLetter) {
+            System.out.println("用户名不能为纯数字，请重新输入");
+            return false;
         }
 
         for (User user : users) {

@@ -41,6 +41,7 @@ public class Fighting {
             String attribute = attributePoints[i];
             System.out.println("请输入" + attribute + "的值（剩余" + points + "点）：");
             int input = sc.nextInt();
+            sc.nextLine(); // 消费掉回车换行，避免后续 nextLine 读到空串
 
             if (input < 0){
                 System.out.println("输入的属性点不能为负数，分配0点给" + attribute + "。");
@@ -169,6 +170,7 @@ public class Fighting {
                     break;
                 }else {
                     System.out.println("无效的选择，默认继续战斗。");
+                    count++;
                     continue; // 继续下一轮战斗
                 }
             }
@@ -243,6 +245,7 @@ public class Fighting {
         System.out.println("2. 强力一击");
         System.out.println("3. 生命涉取");
         int choice = sc.nextInt();
+        sc.nextLine(); // 消费掉回车换行
 
         switch (choice){
             default:

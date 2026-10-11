@@ -32,7 +32,7 @@ public class Enemy extends Character{
     @Override
     public void attack(int amount){
         if (this.defending){
-            amount = amount / 2 > 1 ? amount : 1;
+            amount = Math.max(1, amount / 2);
             this.defending = false;
         }
 
